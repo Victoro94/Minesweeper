@@ -1,14 +1,9 @@
-CC=gcc
-CFLAGS= -Wall -Werror -Wextra -Wvla
-LDFLAGS= -lncurses
 
-SRCS= src/main.c
-OBJS=$(SRCS:.c=.o)
-
-all: $(OBJS)
-	$(CC) -o Minesweep $(OBJS) $(LDFLAGS)
+all:
+	@make --no-print-directory -C src all
 
 .PHONY: clean
 
 clean:
-	$(RM) Minesweep $(OBJS)
+	@make --no-print-directory -C src clean
+	$(RM) Minesweeper
