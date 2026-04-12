@@ -2,7 +2,9 @@ CC=gcc
 CFLAGS= -Wall -Werror -Wextra -Wvla
 LDFLAGS= -lncurses
 
-SRCS=main.c
+SRCS= \
+main.c \
+print_board.c
 
 OBJS=$(SRCS:.c=.o)
 
