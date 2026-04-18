@@ -4,6 +4,7 @@
 enum STATE
 {
     HIDDEN,
+    FLAGGED,
     SHOWN
 };
 

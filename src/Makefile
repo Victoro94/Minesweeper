@@ -4,7 +4,8 @@ LDFLAGS= -lncurses
 
 SRCS= \
 main.c \
-print_board.c
+board.c \
+game.c
 
 OBJS=$(SRCS:.c=.o)
 
