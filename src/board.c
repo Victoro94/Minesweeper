@@ -1,9 +1,36 @@
 #include <ncurses.h>
-
+#include <stdlib.h>
 #include "board.h"
 
+struct cell **board_init(int length, int width)
+{
+    size_t cell_number = length * width;
+    struct cell ** board= calloc(cell_number, sizeof(struct cell *));
+    if (board == NULL)
+        return NULL;
+    for (size_t i = 0; i < cell_number; i++)
+    {
+        board[i] = calloc(1, sizeof(struct cell));
+        if (board[i] == NULL)
+            return NULL;
+        board[i] -> state = HIDDEN;
+    }
+    return board;
+}
 
-int set_color(struct cell *cell)
+void board_free(struct cell **board, int length ,int width )
+{
+    size_t cell_number = length * width;
+    if (board)
+    {
+        for (size_t i = 0; i < cell_number; i++)
+            free(board[i]);
+        free(board);
+    }
+}
+
+
+static int set_color(struct cell *cell)
 {
     if (COLORS>8)
     {
@@ -24,7 +51,7 @@ int set_color(struct cell *cell)
     return 0;
 }
 
-void print_cell(struct cell *cell)
+static void print_cell(struct cell *cell)
 {
     //print the cell
     if (cell -> state == HIDDEN)
@@ -42,7 +69,7 @@ void print_cell(struct cell *cell)
     }
 }
 
-void print_row(int length)
+static void print_row(int length)
 {
     attron(COLOR_PAIR(0));
     for (int i = 0; i < length; i++)
@@ -52,7 +79,7 @@ void print_row(int length)
     printw("+\n");
 }
 
-void print_mines(struct cell **board, int index, int length)
+static void print_mines(struct cell **board, int index, int length)
 {
     for (int j = 0; j < length; j++)
     {
@@ -66,7 +93,8 @@ void print_mines(struct cell **board, int index, int length)
     attron(COLOR_PAIR(0));
     printw("|\n");
 }
-int print_board(struct cell **board, int length, int width)
+
+int board_print(struct cell **board, int length, int width)
 {
     // TODO add colors
     // add information about game

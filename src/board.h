@@ -15,5 +15,8 @@ struct cell
     int bomb_around;
 };
 
-int print_board(struct cell **board, int length, int width);
+struct cell **board_init(int length, int width);
+void board_free(struct cell **board, int length, int width);
+
+int board_print(struct cell **board, int length, int width);
 #endif /* ! BOARD_H */

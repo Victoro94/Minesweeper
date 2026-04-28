@@ -140,6 +140,13 @@ int process_input(void)
         }
         break;  
     case 10 :
+        if (REVEALED == 0)
+        {
+            if (SAFE_FIRST_CLICK == TRUE)
+                BOARD[POS_Y * BOARD_LENGTH + POS_X] -> state = SHOWN;
+            put_mines(BOARD, BOMB_NUMBER, BOARD_LENGTH, BOARD_WIDTH);
+            BOARD[POS_Y * BOARD_LENGTH + POS_X] -> state = HIDDEN;
+        }
         int revealed = reveal(BOARD,POS_X,POS_Y,BOARD_LENGTH,BOARD_WIDTH);
         if (revealed == -1)
             REVEALED = -1;//lose
@@ -155,41 +162,13 @@ int process_input(void)
     return 0;
 }
 
-int init_board(void)
-{
-    size_t cell_number = BOARD_LENGTH * BOARD_WIDTH;
-    BOARD = calloc(cell_number, sizeof(struct cell *));
-    if (BOARD == NULL)
-        return 1;
-    for (size_t i = 0; i < cell_number; i++)
-    {
-        BOARD[i] = calloc(1, sizeof(struct cell));
-        if (BOARD[i] == NULL)
-            return 1;
-        BOARD[i] -> state = HIDDEN;
-    }
-    return 0;
-}
-
-void free_board(void)
-{
-    size_t cell_number = BOARD_LENGTH * BOARD_WIDTH;
-    if (BOARD)
-    {
-        for (size_t i = 0; i < cell_number; i++)
-            free(BOARD[i]);
-        free(BOARD);
-    }
-}
-
 int check_win(int status)
 {
     if (status > 0)
     {
         if (REVEALED == -1)
         {
-
-
+            
         }
         else if (REVEALED == BOARD_LENGTH * BOARD_WIDTH)
         {
@@ -202,28 +181,14 @@ int check_win(int status)
 
 int main(void)
 {
-    // game steps :
-    // ask for length and width done
-    // ask for safe first click
-    // game begin;
-    // print board
-    // wait for actions
-    // process actions
-    // loop to print board if not the end
-    // end game
-
-    // game begins
-
     int options = set_game_options();
     if (options == 1)
         return 1;
-    int board = init_board();
-    if (board == 1)
+    BOARD = board_init(BOARD_LENGTH,BOARD_WIDTH);
+    if (!BOARD)
         return 1;
     //tests
     BOARD[0] -> state = FLAGGED;
-    BOARD[1] -> state = SHOWN;
-    BOARD[2] -> state = SHOWN;
     BOARD[2] -> is_bomb = 1;
     BOARD[3] -> state = HIDDEN;
     BOARD[3] -> bomb_around = 3;
@@ -235,26 +200,39 @@ int main(void)
         define_colors();
     noecho();
     keypad(window, TRUE);
-    int stop = 1;  
+    // game begins
+
+    //first print
+    int stop = 1;
+    board_print(BOARD, BOARD_LENGTH, BOARD_WIDTH);
+    printw("Commands :\n");
+    printw("q: quit  ENTER: show  ARROWS: move curser   BACKSPACE: flag\n");
+    move(1, 2);// first case
+
+    //safe click 
     while (stop >= 0)
     {
+        // print board
+        stop = process_input();
+        //check win
+        stop = check_win(stop);
         // print board
         if(stop != 0)
         {
             clear();
-            print_board(BOARD, BOARD_LENGTH, BOARD_WIDTH);
+            board_print(BOARD, BOARD_LENGTH, BOARD_WIDTH);
             refresh();
             // print here for commands
             printw("Commands :\n");
             printw("q: quit  ENTER: show  ARROWS: move curser   BACKSPACE: flag\n");
+            printw("revealed : %d/%d\n",REVEALED,BOARD_LENGTH*BOARD_WIDTH);
 
             //printw("board : %d",BOARD[0] -> state);
             move(1 + 2 * POS_Y, 2 + 4 * POS_X);
         }
-        stop = process_input();
-        //check win
-        stop = check_win(stop);
     }
+
+
     /* print colors 
     for(int i  = 0 ;i < 256; i++)
     {
@@ -263,9 +241,9 @@ int main(void)
         printw("%d ",i);
     }
     getch();
-    */
-    getch()
-    free_board();
+    */    
+    getch();
+    board_free(BOARD, BOARD_LENGTH, BOARD_WIDTH);
     endwin();
     return 0;
 }

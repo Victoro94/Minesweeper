@@ -1,15 +1,19 @@
 #include "board.h"
 #include "game.h"
 
+#include <stdlib.h>
+#include <time.h>
 
 int put_mines(struct cell ** board, int bomb_number, int length, int width)
 {
-    if(board)
-        bomb_number = length;
-    length = width;
-    width = bomb_number;
-    (void)length;
-
+    // build cell list
+    // shuffle list
+    // pick n first correct cell
+    // put mines in each cell and update his neighbors   
+    (void) board;
+    (void) bomb_number;
+    (void) length;
+    (void) width;
     return 0;
 }
 
