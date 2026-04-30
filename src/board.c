@@ -106,3 +106,31 @@ int board_print(struct cell **board, int length, int width)
     print_row(length);
     return 0;
 }
+
+void flag_bombs(struct cell **board, int length, int width)
+{
+    for (int x = 0; x < length; x++)
+    {
+        for (int y = 0; y < width; y++)
+        {
+            if (board[y * length + x] -> is_bomb == 1)
+                board[y * length + x] -> state = FLAGGED;
+        }
+    }
+
+}
+
+
+void show_bombs(struct cell **board,int length, int width)
+{
+    for (int x = 0; x < length; x++)
+    {
+        for (int y = 0; y < width; y++)
+        {
+            if (board[y * length + x] -> is_bomb == 1)
+                board[y * length + x] -> state = SHOWN;
+        }
+    }
+
+
+}

@@ -10,7 +10,7 @@ game.c
 OBJS=$(SRCS:.c=.o)
 
 all: $(OBJS)
-	$(CC) -o ../Minesweeper $(OBJS) $(LDFLAGS)
+	$(CC) -o ../Minesweeper $(OBJS) $(LDFLAGS) 
 
 .PHONY: clean
 

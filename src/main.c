@@ -13,6 +13,7 @@ int BOMB_NUMBER = 0;
 int POS_X = 0;
 int POS_Y = 0;
 int REVEALED = 0;
+char* game_status = NULL;
 
 int SAFE_FIRST_CLICK = TRUE;
 
@@ -99,7 +100,7 @@ int process_input(void)
     switch (input)
     {
     case 'q':
-        return -1;
+        return -2;
     case KEY_UP:
         if (POS_Y > 0)
         {
@@ -168,12 +169,15 @@ int check_win(int status)
     {
         if (REVEALED == -1)
         {
-            
+            game_status = "YOU LOST, MAYBE NEXT TIME.";
+            show_bombs(BOARD,BOARD_LENGTH,BOARD_WIDTH);
+            return -1;
         }
-        else if (REVEALED == BOARD_LENGTH * BOARD_WIDTH)
+        else if (REVEALED == BOARD_LENGTH * BOARD_WIDTH - BOMB_NUMBER)
         {
-
-
+            game_status = "YOU WIN !!";
+            flag_bombs(BOARD,BOARD_LENGTH,BOARD_WIDTH);
+            return -1;
         }
     }
     return status;
@@ -187,13 +191,6 @@ int main(void)
     BOARD = board_init(BOARD_LENGTH,BOARD_WIDTH);
     if (!BOARD)
         return 1;
-    //tests
-    BOARD[0] -> state = FLAGGED;
-    BOARD[2] -> is_bomb = 1;
-    BOARD[3] -> state = HIDDEN;
-    BOARD[3] -> bomb_around = 3;
-    BOARD[4] -> state = FLAGGED;
-    // end of tests
     window = initscr();
     start_color();
     if (COLORS > 8)
@@ -201,12 +198,12 @@ int main(void)
     noecho();
     keypad(window, TRUE);
     // game begins
-
     //first print
     int stop = 1;
     board_print(BOARD, BOARD_LENGTH, BOARD_WIDTH);
     printw("Commands :\n");
     printw("q: quit  ENTER: show  ARROWS: move curser   BACKSPACE: flag\n");
+    printw("revealed : %d/%d\nbomb number: %d\n",REVEALED,BOARD_LENGTH*BOARD_WIDTH,BOMB_NUMBER);
     move(1, 2);// first case
 
     //safe click 
@@ -214,7 +211,6 @@ int main(void)
     {
         // print board
         stop = process_input();
-        //check win
         stop = check_win(stop);
         // print board
         if(stop != 0)
@@ -225,24 +221,22 @@ int main(void)
             // print here for commands
             printw("Commands :\n");
             printw("q: quit  ENTER: show  ARROWS: move curser   BACKSPACE: flag\n");
-            printw("revealed : %d/%d\n",REVEALED,BOARD_LENGTH*BOARD_WIDTH);
-
+            printw("revealed : %d/%d\nbomb number: %d\n",REVEALED,BOARD_LENGTH*BOARD_WIDTH,BOMB_NUMBER);
             //printw("board : %d",BOARD[0] -> state);
             move(1 + 2 * POS_Y, 2 + 4 * POS_X);
         }
     }
-
-
-    /* print colors 
-    for(int i  = 0 ;i < 256; i++)
+    if (stop == -1)
     {
-        init_pair(i+3,i,COLOR_BLACK);
-        attron(COLOR_PAIR(i+3));
-        printw("%d ",i);
-    }
-    getch();
-    */    
-    getch();
+        clear();
+        board_print(BOARD, BOARD_LENGTH, BOARD_WIDTH);
+        refresh();
+        // print here for commands
+        printw("%s\n",game_status);
+        printw("revealed: %d/%d\nbomb number: %d\n",REVEALED,BOARD_LENGTH*BOARD_WIDTH,BOMB_NUMBER);
+        printw("Click anywhere to quit");
+        getch();
+    }   
     board_free(BOARD, BOARD_LENGTH, BOARD_WIDTH);
     endwin();
     return 0;
