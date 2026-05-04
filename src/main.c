@@ -14,7 +14,7 @@ int POS_X = 0;
 int POS_Y = 0;
 int REVEALED = 0;
 char* game_status = NULL;
-
+int SEED = 1;
 int SAFE_FIRST_CLICK = TRUE;
 
 struct cell **BOARD = NULL;
@@ -145,7 +145,7 @@ int process_input(void)
         {
             if (SAFE_FIRST_CLICK == TRUE)
                 BOARD[POS_Y * BOARD_LENGTH + POS_X] -> state = SHOWN;
-            put_mines(BOARD, BOMB_NUMBER, BOARD_LENGTH, BOARD_WIDTH);
+            put_mines(BOARD, BOMB_NUMBER, BOARD_LENGTH, BOARD_WIDTH,SEED);
             BOARD[POS_Y * BOARD_LENGTH + POS_X] -> state = HIDDEN;
         }
         int revealed = reveal(BOARD,POS_X,POS_Y,BOARD_LENGTH,BOARD_WIDTH);
