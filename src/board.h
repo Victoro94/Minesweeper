@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <stdbool.h>
+
 enum STATE
 {
     HIDDEN,
@@ -11,7 +13,7 @@ enum STATE
 struct cell
 {
     enum STATE state;
-    int is_bomb;
+    bool is_bomb;
     int bomb_around;
 };
 
