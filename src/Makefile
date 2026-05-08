@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS= -Wall -Werror -Wextra -Wvla
-LDFLAGS= -lncurses
+CFLAGS=-Wall -Werror -Wextra -Wvla
+LDFLAGS=-lncurses
 
 SRCS= \
 main.c \

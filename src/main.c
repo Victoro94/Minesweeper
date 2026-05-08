@@ -118,7 +118,19 @@ int check_win(struct game *game,int status)
 
 void print_help()
 {
-    printf("name : Minesweeper - simple minesweeper game on the terminal\n\n\nusage: ./Minesweeper [length] [width] [bomb number] [seed] [safe_first_click]\n\n\tlength:       integer higher than 0\n\twidth:        integer higher than 0\n\tbomb_number:  integer higher than 0\n\tsafe_first_click: f,F,false,False or FALSE\n\n\ndefault values:\n\n\tlength and width : 10\n\tbomb_number:       20\n\tsafe_first_click: true\n");
+    puts("name : Minesweeper - simple minesweeper game on the terminal\n\n");
+    puts("usage: ./Minesweeper [length] [width] [bomb number] [seed] "
+    "[safe_first_click]\n");
+    puts("\tlength:       integer higher than 0");
+    puts("\twidth:        integer higher than 0");
+    puts("\tbomb_number:  integer higher than 0");
+    puts("\tseed:         integer higher or equal to 0");
+    puts("\tsafe_first_click: f,F,false,False or FALSE\n\n");
+    puts("default values:\n");
+    puts("\tlength and width:  10");
+    puts("\tbomb_number:       20");
+    puts("\tseed:              0(random using time)");
+    puts("\tsafe_first_click:  true");
 }
 
 void print_status(struct game *game)
@@ -180,8 +192,8 @@ int main(int argc, char *argv[])
     board_print(game->board, game->length, game->width);
     printw("Commands :\n");
     printw("q: quit  ENTER: show  ARROWS: move curser   BACKSPACE: flag\n");
-    printw("revealed : %d/%ld\nbomb number: %ld\n",REVEALED,game->length*game->width,game->bomb_number);
-    printw("%d\n",game->seed);
+    printw("revealed: %d/%ld\nbomb number: %ld\n",REVEALED,game->length*game->width,game->bomb_number);
+    printw("seed: %d\n",game->seed);
     move(1, 2);// first case
 
     //safe click 
@@ -201,6 +213,7 @@ int main(int argc, char *argv[])
             printw("Commands :\n");
             printw("q: quit  ENTER: show  ARROWS: move curser   BACKSPACE: flag\n");
             printw("revealed : %d/%ld\nbomb number: %ld\n",REVEALED,game->length*game->width,game->bomb_number);
+            printw("seed: %d\n",game->seed);
             //printw("board : %d",BOARD[0] -> state);
             move(1 + 2 * POS_Y, 2 + 4 * POS_X);
         }
@@ -213,6 +226,7 @@ int main(int argc, char *argv[])
         // print here for commands
         printw("%s\n",game_status);
         printw("revealed: %d/%ld\nbomb number: %ld\n",REVEALED,game->length*game->width,game->bomb_number);
+        printw("seed: %d\n",game->seed);
         printw("Click anywhere to quit");
         getch();
     }   
