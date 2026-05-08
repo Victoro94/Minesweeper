@@ -45,7 +45,15 @@ struct game *parse_options(int argc, char *argv[])
             else 
                 res -> bomb_number = n;
             break;
-        case 4:// safe click ?
+        case 4:
+            int s = atoi(argv[i]);
+            if (s <0)
+                res -> status = -4;
+            else
+                res -> seed = s;
+
+            break;
+        case 5:// safe click ?
             if (strcmp(argv[i],"F") == 0 || strcmp(argv[i],"f") == 0 || \
                 strcmp(argv[i],"false") == 0 || strcmp(argv[i],"False") == 0 || \
                 strcmp(argv[i],"FALSE") == 0)

@@ -19,6 +19,7 @@ struct game
     // -1 length problem
     // -2 width pb
     // -3 bomb number problem
+    // -4 seed problem
     // 1 asked help (print help)
 };
 struct game *parse_options(int argc, char *argv[]);

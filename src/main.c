@@ -129,14 +129,16 @@ void print_status(struct game *game)
             print_help();
             return;
         case -1:
-            fprintf(stderr,"grid length should be highter than 0 and be a number\n");
+            fprintf(stderr,"grid length should be a number higher than 0\n");
             break;
         case -2:
-            fprintf(stderr,"grid width should be highter than 0 and be a number\n");
+            fprintf(stderr,"grid width should be a number higher than 0\n");
             break;
         case -3:
-            fprintf(stderr,"bomb number should be highter than 0 and be a number\n");
+            fprintf(stderr,"bomb number should be a number higher than 0\n");
             break;
+        case -4:
+            fprintf(stderr,"seed should be a number greater or equal to 0\n");
     }
     fprintf(stderr,"use -h for more help\n");
 }
@@ -191,7 +193,8 @@ int main(int argc, char *argv[])
         // print board
         if(stop != 0)
         {
-            clear();
+            //clear();
+            move(0,0);
             board_print(game->board, game->length, game->width);
             refresh();
             // print here for commands
