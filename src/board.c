@@ -29,7 +29,6 @@ void board_free(struct cell **board, int length ,int width )
     }
 }
 
-
 static int set_color(struct cell *cell)
 {
     if (COLORS>8)
@@ -97,7 +96,6 @@ static void print_mines(struct cell **board, int index, int length)
 int board_print(struct cell **board, int length, int width)
 {
     // TODO add colors
-    // add information about game
     for (int i = 0; i < width; i++)
     {
         print_row(length);
@@ -107,30 +105,15 @@ int board_print(struct cell **board, int length, int width)
     return 0;
 }
 
-void flag_bombs(struct cell **board, int length, int width)
+void show_bombs(struct cell **board, int length, int width, enum STATE state)
 {
     for (int x = 0; x < length; x++)
     {
         for (int y = 0; y < width; y++)
         {
             if (board[y * length + x] -> is_bomb == 1)
-                board[y * length + x] -> state = FLAGGED;
+                board[y * length + x] -> state = state;
         }
     }
-
-}
-
-
-void show_bombs(struct cell **board,int length, int width)
-{
-    for (int x = 0; x < length; x++)
-    {
-        for (int y = 0; y < width; y++)
-        {
-            if (board[y * length + x] -> is_bomb == 1)
-                board[y * length + x] -> state = SHOWN;
-        }
-    }
-
 
 }

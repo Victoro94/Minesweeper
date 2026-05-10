@@ -1,11 +1,13 @@
 #include "board.h"
 #include "game.h"
-
+#include <ncurses.h>
 #include <string.h>
 #include <stdlib.h>
 
 struct game *parse_options(int argc, char *argv[])
-{
+{   
+    // should be redone with option like --grid -g, -bomb -b,--safe -f 
+    // and --seed -s
     struct game *res = calloc(1,sizeof(struct game));
     if (res == NULL)
         return NULL;// memory problem
@@ -17,49 +19,32 @@ struct game *parse_options(int argc, char *argv[])
     int i = 1;
     while (i < argc)
     {
-        if (strcmp(argv[i],"-h") == 0 )
+        if (strcmp(argv[i],"-h") == 0)
         {   
             res -> status = 1;
             return res;
         }
-        switch (i)
+        if (i != 5)
         {
-        case 1:// length
-            int l = atoi(argv[i]);
-            if (l <= 0)
-                res -> status = -1;
-            else 
-                res -> length = l;
-            break;
-        case 2:// width
-            int w = atoi(argv[i]);
-            if (w <= 0)
-                res -> status = -2;
-            else 
-                res -> width = w;
-            break; 
-        case 3:// bomb number
             int n = atoi(argv[i]);
             if (n <= 0)
-                res -> status = -3;
-            else 
-                res -> bomb_number = n;
-            break;
-        case 4:
-            int s = atoi(argv[i]);
-            if (s <0)
-                res -> status = -4;
+                res -> status = -i;
             else
-                res -> seed = s;
-
-            break;
-        case 5:// safe click ?
-            if (strcmp(argv[i],"F") == 0 || strcmp(argv[i],"f") == 0 || \
-                strcmp(argv[i],"false") == 0 || strcmp(argv[i],"False") == 0 || \
-                strcmp(argv[i],"FALSE") == 0)
-                res-> safe_first_click = false;
-        default:
+            {
+                if (i == 1) 
+                    res -> length = n;
+                else if (i == 2) 
+                    res -> width = n;
+                else if (i == 3) 
+                    res -> bomb_number = n;
+                else if (i == 4) 
+                    res -> seed = n;
+            }
         }
+        else if ((i == 5) && (strcmp(argv[i],"F") == 0 || strcmp(argv[i],"f") == 0 || \
+            strcmp(argv[i],"false") == 0 || strcmp(argv[i],"False") == 0 || \
+            strcmp(argv[i],"FALSE") == 0))
+            res-> safe_first_click = false;
         i++;
     }
     if (res->bomb_number == 0)
@@ -67,11 +52,10 @@ struct game *parse_options(int argc, char *argv[])
     return res;
 }
 
-
 void update_cell(struct game *game, int x , int y)
 {
     if (x < 0 || y < 0 || (size_t)x >=game->length || (size_t)y >= game->width)
-        return ;
+        return;
     int current = game -> board[y * game->length + x] -> bomb_around;
     game -> board[y * game->length + x] -> bomb_around = current+1;
 }
@@ -127,15 +111,11 @@ struct cell **shuffle_list(struct game *game)
     for (int i = 0 ; i< n-1; i++)
     {
         int r = rand();
-        //while (r%(n -(i+1))+i+1>=n)
-            //r = rand();
         int index = r%(n-(i+1))+i+1;
         struct cell *tmp = result[i];
         result[i] = result[index];
         result[index] = tmp;
     }
-
-
     return result;
 }
 
@@ -159,12 +139,10 @@ int put_mines(struct game *game)
             bomb_placed++;
             i++;
         }
-        
     }
     update_neighbors(game);
     return 0;
 }
-
 
 int reveal(struct game *game, int x, int y)
 {
@@ -194,4 +172,84 @@ int reveal(struct game *game, int x, int y)
         }
     }
     return 0;
+}
+
+int process_input(struct game* game, size_t *x, size_t *y, int *revealed,int *flags)
+{
+    int input = getch();
+    int print = 0;
+    if (input == 'q')
+        return -2;
+    else if (input == KEY_UP || input == 'w')
+    {
+        if ( *y > 0 )
+        {
+            *y = *y - 1;
+            print = 1;
+        }
+    }
+    else if (input == KEY_DOWN || input == 's')
+    {
+        if ( *y < game->width - 1)
+        {
+            *y = *y + 1;
+            print = 1;
+        }
+    }
+    else if (input == KEY_LEFT || input == 'a')
+    {
+        if (*x > 0 )
+        {
+            *x = *x - 1;
+            print = 1;
+        }
+    }
+    else if (input == KEY_RIGHT || input == 'd')
+    {
+        if (*x < game->length - 1)
+        {
+            *x = *x + 1;
+            print = 1;
+        }
+    }
+    else if (input == KEY_BACKSPACE || input == 32)
+    {   
+        int pos = game -> length * (*y) + *x;
+        if (game -> board[pos] -> state != SHOWN)
+        {
+            if (game -> board[pos] -> state == FLAGGED)
+            {
+                game -> board[pos] -> state = HIDDEN;
+                *flags = *flags - 1;    
+            }
+            else 
+            {
+                game -> board[pos] -> state = FLAGGED;
+                *flags = *flags + 1;    
+            }
+            print = 1;
+        }
+    }
+    else if (input == 10)
+    {
+        if (*revealed == 0)// first click
+        {
+            if (game -> safe_first_click == true)
+            {
+                game -> board[(game -> length) * (*y) + (*x)]-> state = SHOWN;
+                game -> x = *x;
+                game -> y = *y;
+            }
+            put_mines(game);
+            game -> board[(game -> length) * (*y) + (*x)]-> state = HIDDEN;
+        }
+        int number = reveal(game, *x, *y);
+        if (number == -1)
+            *revealed = -1;
+        else 
+            *revealed += number;
+        if (number != 0)
+            print = 1;
+    }
+    return print;
 }

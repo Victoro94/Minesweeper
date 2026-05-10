@@ -28,4 +28,6 @@ int put_mines(struct game *game);
 
 int reveal(struct game *game, int x, int y);
 
+int process_input(struct game *game, size_t *x, size_t *y, int *revealed, int *flags);
+
 #endif /* ! GAME_H */

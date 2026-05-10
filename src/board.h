@@ -21,6 +21,5 @@ struct cell **board_init(int length, int width);
 void board_free(struct cell **board, int length, int width);
 
 int board_print(struct cell **board, int length, int width);
-void flag_bombs(struct cell **board, int length, int width);
-void show_bombs(struct cell **board, int length, int width);
+void show_bombs(struct cell **board, int length, int width,enum STATE state);
 #endif /* ! BOARD_H */
