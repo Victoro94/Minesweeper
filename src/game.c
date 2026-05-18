@@ -174,6 +174,21 @@ int reveal(struct game *game, int x, int y)
     return 0;
 }
 
+void set_around(struct game *game, enum STATE state)
+{
+    int x = game->x;
+    int y = game->y;
+    for (int i = -1; i<=1;i++)
+    {
+        for (int j=-1; j<=1; j++)
+        {
+            if (x+i >=0 && x+i < (int) game->length)
+                if (y+j >=0 && y+j < (int) game->width)
+                    game -> board[(y+j)* game->length + x+i]->state = state;
+        }
+    }
+}
+
 int process_input(struct game* game, size_t *x, size_t *y, int *revealed,int *flags)
 {
     int input = getch();
@@ -234,14 +249,16 @@ int process_input(struct game* game, size_t *x, size_t *y, int *revealed,int *fl
     {
         if (*revealed == 0)// first click
         {
+            game->x = *x;
+            game->y = *y;
             if (game -> safe_first_click == true)
             {
-                game -> board[(game -> length) * (*y) + (*x)]-> state = SHOWN;
-                game -> x = *x;
-                game -> y = *y;
+                //game -> board[(game -> length) * (*y) + (*x)]-> state = SHOWN;
+                set_around(game,SHOWN);
             }
             put_mines(game);
-            game -> board[(game -> length) * (*y) + (*x)]-> state = HIDDEN;
+           // game -> board[(game -> length) * (*y) + (*x)]-> state = HIDDEN;
+           set_around(game,HIDDEN);
         }
         int number = reveal(game, *x, *y);
         if (number == -1)
